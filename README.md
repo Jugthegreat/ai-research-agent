@@ -190,8 +190,8 @@ ai-research-agent/
 
 ## 🔗 Live Demo
 
-- **Frontend**: [https://your-app.vercel.app](https://your-app.vercel.app)
-- **Backend**: [https://your-api.railway.app](https://your-api.railway.app)
+- **Frontend**: [[https://your-app.vercel.app](https://your-app.vercel.app)](https://ai-research-agent-seven.vercel.app/)
+- **Backend**: ai-research-agent-production-b377.up.railway.app
 
 ## 📄 License
 
