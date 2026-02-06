@@ -13,10 +13,10 @@ from config import settings
 
 app = FastAPI(title="AI Research Agent API")
 
-# CORS middleware
+# CORS middleware - Allow all origins for deployment
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -201,3 +201,63 @@ async def list_chats(
         )
         for chat in chats
     ]
+
+class ChatUpdate(BaseModel):
+    title: str
+
+@app.patch("/api/chat/{chat_id}", response_model=ChatResponse)
+async def update_chat(
+    chat_id: str,
+    chat_update: ChatUpdate,
+    db: Session = Depends(get_db)
+):
+    """Update chat title"""
+    chat = db.query(Chat).filter(Chat.id == chat_id).first()
+    
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found")
+    
+    chat.title = chat_update.title
+    db.commit()
+    db.refresh(chat)
+    
+    return ChatResponse(
+        id=chat.id,
+        title=chat.title,
+        created_at=chat.created_at.isoformat(),
+        messages=[]
+    )
+
+@app.delete("/api/chat/{chat_id}")
+async def delete_chat(
+    chat_id: str,
+    db: Session = Depends(get_db)
+):
+    """Delete a chat and all its messages"""
+    chat = db.query(Chat).filter(Chat.id == chat_id).first()
+    
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found")
+    
+    # Delete all messages in the chat first
+    db.query(Message).filter(Message.chat_id == chat_id).delete()
+    
+    # Delete the chat
+    db.delete(chat)
+    db.commit()
+    
+    return {"message": "Chat deleted successfully"}
+
+@app.delete("/api/chats")
+async def clear_all_chats(
+    db: Session = Depends(get_db)
+):
+    """Delete all chats and messages"""
+    # Delete all messages first
+    db.query(Message).delete()
+    
+    # Delete all chats
+    db.query(Chat).delete()
+    db.commit()
+    
+    return {"message": "All chats cleared successfully"}

@@ -2,43 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom scrollbar - Claude style */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(168, 162, 158, 0.3);
-  border-radius: 3px;
+  background-color: #333;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(168, 162, 158, 0.5);
+  background-color: #555;
 }
 
-/* Selection */
-::selection {
-  background-color: rgba(217, 119, 6, 0.3);
+::-webkit-scrollbar-corner {
+  background-color: transparent;
 }
 
-/* Focus visible */
-:focus-visible {
-  outline: 2px solid #D97706;
-  outline-offset: 2px;
+@layer base {
+  * {
+    border-color: #1f1f1f;
+  }
+  body {
+    background-color: #0a0a0a;
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  button {
+    background: transparent;
+  }
 }
 
-/* Smooth transitions */
-* {
-  transition-property: color, background-color, border-color;
-  transition-duration: 150ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-button, a, input, textarea {
-  transition-property: color, background-color, border-color, opacity, transform;
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }

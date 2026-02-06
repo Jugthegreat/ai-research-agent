@@ -7,7 +7,7 @@ import re
 class ResearchAgent:
     def __init__(self):
         self.client = Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-        self.model = "claude-opus-4-20250514"
+        self.model = "claude-sonnet-4-20250514"
         print(f"✅ Agent initialized with model: {self.model}")
         
     def should_search(self, query: str) -> bool:

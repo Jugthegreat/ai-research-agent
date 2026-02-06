@@ -1,36 +1,203 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Research Agent
 
-## Getting Started
+An AI-powered research assistant that answers questions by searching the web and synthesizing information from multiple sources.
 
-First, run the development server:
+![AI Research Agent](https://img.shields.io/badge/AI-Research%20Agent-e11d48?style=for-the-badge)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🌟 Features
+
+- **AI-Powered Research**: Uses Claude AI with web search capabilities to provide accurate, up-to-date answers
+- **Real-time Streaming**: Responses stream in real-time for better UX
+- **Source Citations**: All answers include clickable source links
+- **Thinking Process**: View the AI's reasoning steps for transparency
+- **Shareable Chats**: Each conversation has a unique URL for easy sharing
+- **Chat History**: All conversations are saved and searchable
+- **Dark Mode UI**: Clean, modern interface with smooth animations
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Next.js 15** - React framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Framer Motion** - Animations
+- **Lucide React** - Icons
+
+### Backend
+- **FastAPI** - Python web framework
+- **SQLAlchemy** - ORM
+- **PostgreSQL** - Database
+- **Anthropic Claude** - AI model with web search
+
+## 📁 Project Structure
+
+```
+ai-research-agent/
+├── frontend/                # Next.js frontend
+│   ├── app/                 # App router pages
+│   │   ├── chat/[id]/       # Dynamic chat pages
+│   │   ├── globals.css      # Global styles
+│   │   ├── layout.tsx       # Root layout
+│   │   └── page.tsx         # Home page
+│   ├── components/          # React components
+│   │   ├── ChatInterface.tsx
+│   │   ├── MessageBubble.tsx
+│   │   ├── Sidebar.tsx
+│   │   ├── SourceCard.tsx
+│   │   └── ThinkingIndicator.tsx
+│   └── lib/                 # Utilities
+│       └── api.ts           # API client
+│
+├── backend/                 # FastAPI backend
+│   ├── main.py              # Entry point & routes
+│   ├── models.py            # SQLAlchemy models
+│   ├── schemas.py           # Pydantic schemas
+│   ├── database.py          # Database connection
+│   └── requirements.txt     # Python dependencies
+│
+└── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js 18+
+- Python 3.10+
+- PostgreSQL
+- Anthropic API key
 
-## Learn More
+### Backend Setup
 
-To learn more about Next.js, take a look at the following resources:
+1. **Navigate to backend directory**
+   ```bash
+   cd backend
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Create virtual environment**
+   ```bash
+   python -m venv venv
+   
+   # Windows
+   venv\Scripts\activate
+   
+   # macOS/Linux
+   source venv/bin/activate
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## Deploy on Vercel
+4. **Set up environment variables**
+   
+   Create a `.env` file in the backend directory:
+   ```env
+   DATABASE_URL=postgresql://username:password@localhost:5432/research_agent
+   ANTHROPIC_API_KEY=your_anthropic_api_key
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. **Create PostgreSQL database**
+   ```bash
+   createdb research_agent
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+6. **Run the backend**
+   ```bash
+   uvicorn main:app --reload --port 8000
+   ```
+
+   The API will be available at `http://localhost:8000`
+
+### Frontend Setup
+
+1. **Navigate to frontend directory**
+   ```bash
+   cd frontend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   
+   Create a `.env.local` file:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:8000
+   ```
+
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+   The app will be available at `http://localhost:3000`
+
+## 🔧 API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/chats` | Get all chats |
+| `POST` | `/chats` | Create new chat |
+| `GET` | `/chats/{id}` | Get chat by ID |
+| `PUT` | `/chats/{id}` | Update chat title |
+| `DELETE` | `/chats/{id}` | Delete chat |
+| `DELETE` | `/chats` | Delete all chats |
+| `GET` | `/chats/{id}/messages` | Get chat messages |
+| `POST` | `/chats/{id}/messages` | Send message (streaming) |
+
+## 🌐 Deployment
+
+### Frontend (Vercel)
+
+1. Push code to GitHub
+2. Import project in Vercel
+3. Set environment variable:
+   - `NEXT_PUBLIC_API_URL` = your deployed backend URL
+
+### Backend (Railway/Render)
+
+1. Create new project
+2. Connect GitHub repository
+3. Set environment variables:
+   - `DATABASE_URL` = PostgreSQL connection string
+   - `ANTHROPIC_API_KEY` = your API key
+4. Deploy
+
+## 📝 Environment Variables
+
+### Backend
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `ANTHROPIC_API_KEY` | Anthropic API key for Claude |
+
+### Frontend
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_API_URL` | Backend API URL |
+
+## 🎥 Demo
+
+[Link to demo video]
+
+## 🔗 Live Demo
+
+- **Frontend**: [https://your-app.vercel.app](https://your-app.vercel.app)
+- **Backend**: [https://your-api.railway.app](https://your-api.railway.app)
+
+## 📄 License
+
+MIT License - feel free to use this project for learning or as a starting point for your own projects.
+
+## 👤 Author
+
+**Dakshay Mehta**
+- GitHub: [@dakshaymehta](https://github.com/dakshaymehta)

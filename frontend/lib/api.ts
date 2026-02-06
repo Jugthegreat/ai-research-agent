@@ -41,6 +41,54 @@ export async function getChats(): Promise<Chat[]> {
   return response.json();
 }
 
+export async function updateChatTitle(chatId: string, title: string): Promise<Chat> {
+  const response = await fetch(`${API_BASE_URL}/api/chat/${chatId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title }),
+  });
+  
+  if (!response.ok) throw new Error('Failed to update chat title');
+  return response.json();
+}
+
+export async function deleteChat(chatId: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/chat/${chatId}`, {
+    method: 'DELETE',
+  });
+  
+  if (!response.ok) throw new Error('Failed to delete chat');
+}
+
+export async function clearAllChats(): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/chats`, {
+    method: 'DELETE',
+  });
+  
+  if (!response.ok) throw new Error('Failed to clear chats');
+}
+
+// Generate a short title from user's query
+export function generateTitleFromQuery(query: string): string {
+  // Remove extra whitespace and truncate
+  const cleaned = query.trim().replace(/\s+/g, ' ');
+  
+  // If query is short enough, use it
+  if (cleaned.length <= 40) {
+    return cleaned;
+  }
+  
+  // Try to cut at a word boundary
+  const truncated = cleaned.substring(0, 40);
+  const lastSpace = truncated.lastIndexOf(' ');
+  
+  if (lastSpace > 20) {
+    return truncated.substring(0, lastSpace) + '...';
+  }
+  
+  return truncated + '...';
+}
+
 export interface StreamChunk {
   type: 'text' | 'thinking' | 'done' | 'complete' | 'error';
   content?: string;
