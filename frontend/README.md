@@ -199,5 +199,5 @@ MIT License - feel free to use this project for learning or as a starting point 
 
 ## 👤 Author
 
-**Dakshay Mehta**
-- GitHub: [@dakshaymehta](https://github.com/dakshaymehta)
+**Jugal Upadhyay**
+- GitHub: [@jugthegreat](https://github.com/jugthegreat)
