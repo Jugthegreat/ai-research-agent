@@ -13,9 +13,12 @@ class ResearchAgent:
     def should_search(self, query: str) -> bool:
         """Determine if we need to search the web."""
         search_keywords = [
-            'current', 'latest', 'recent', 'today', 'now', 'this year', '2025', '2026',
+            'current', 'latest', 'recent', 'today', 'now', 'this year', '2024', '2025', '2026',
             'who is', 'what is the current', 'president', 'ceo', 'news', 'weather',
-            'stock price', 'score', 'winner', 'election', 'update', 'right now'
+            'stock price', 'score', 'winner', 'election', 'update', 'right now',
+            'startup', 'company', 'funding', 'ai ', 'artificial intelligence',
+            'how to', 'best', 'top', 'trends', 'research', 'study', 'report',
+            'price', 'cost', 'review', 'compare', 'vs', 'versus'
         ]
         
         query_lower = query.lower()
@@ -60,7 +63,11 @@ class ResearchAgent:
             
             system_prompt = """You are a research assistant with web search capabilities.
 
-When asked about current events or recent information, use the web_search tool to find accurate, up-to-date information. Then synthesize the results and cite sources as [Title](URL)."""
+IMPORTANT: When you search the web and find information, you MUST cite your sources using markdown links in this exact format: [Source Title](URL)
+
+For example: According to [BBC News](https://bbc.com/article), the event happened yesterday.
+
+Always include at least 2-3 source citations in your response when using web search. Place citations inline where you reference the information."""
 
             request_params = {
                 "model": self.model,
