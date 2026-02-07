@@ -32,7 +32,5 @@ Claude (claude-sonnet-4-20250514) was chosen for its strong reasoning capabiliti
 
 - Add authentication for private chats
 - Implement multiple tools (calculator, code execution)
-- Add voice input/output
 - Enable conversation export (PDF/Markdown)
 
-**Word Count: 289**
