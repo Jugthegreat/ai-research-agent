@@ -7,13 +7,14 @@ import {
   PanelLeftClose, 
   PanelLeft, 
   ArrowDown,
-  Sparkles,
-  StopCircle,
-  Share
+  Search,
+  Square,
+  ArrowUpRight
 } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 import ThinkingIndicator from './ThinkingIndicator';
 import Sidebar from './Sidebar';
+import VoiceInput from './VoiceInput';
 import { Message, sendMessage, updateChatTitle, generateTitleFromQuery } from '@/lib/api';
 import { toast } from 'sonner';
 
@@ -41,9 +42,7 @@ export default function ChatInterface({ chatId, initialMessages }: ChatInterface
     if (initialQuery && messages.length === 0) {
       sessionStorage.removeItem('initialQuery');
       setInput(initialQuery);
-      setTimeout(() => {
-        handleSubmitWithQuery(initialQuery);
-      }, 100);
+      setTimeout(() => handleSubmitWithQuery(initialQuery), 100);
     }
   }, []);
 
@@ -61,8 +60,7 @@ export default function ChatInterface({ chatId, initialMessages }: ChatInterface
 
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
-      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
-      setShowScrollButton(!isNearBottom);
+      setShowScrollButton(scrollHeight - scrollTop - clientHeight > 100);
     };
 
     container.addEventListener('scroll', handleScroll);
@@ -71,11 +69,8 @@ export default function ChatInterface({ chatId, initialMessages }: ChatInterface
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        setSidebarOpen(false);
-      }
+      if (window.innerWidth < 1024) setSidebarOpen(false);
     };
-
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -84,7 +79,6 @@ export default function ChatInterface({ chatId, initialMessages }: ChatInterface
   const handleSubmitWithQuery = async (query: string) => {
     if (!query.trim() || isLoading) return;
 
-    // Update chat title on first message
     if (isFirstMessage) {
       const title = generateTitleFromQuery(query);
       try {
@@ -148,7 +142,7 @@ export default function ChatInterface({ chatId, initialMessages }: ChatInterface
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSubmitWithQuery(input);
   };
@@ -167,11 +161,10 @@ export default function ChatInterface({ chatId, initialMessages }: ChatInterface
     setThinkingText('');
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-    const textarea = e.target;
-    textarea.style.height = 'auto';
-    textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+  const handleShare = () => {
+    const url = `${window.location.origin}/chat/${chatId}`;
+    navigator.clipboard.writeText(url);
+    toast.success('Chat link copied!');
   };
 
   return (
@@ -184,28 +177,25 @@ export default function ChatInterface({ chatId, initialMessages }: ChatInterface
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="flex-shrink-0 h-16 flex items-center justify-between px-6 border-b border-[#1f1f1f] bg-[#0a0a0a]">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2.5 text-[#666] hover:text-white hover:bg-[#1a1a1a] rounded-xl transition-colors"
-            >
-              {sidebarOpen ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeft className="w-5 h-5" />}
-            </button>
-          </div>
+        <header className="h-14 border-b border-[#1f1f1f] flex items-center justify-between px-4 bg-[#0a0a0a]">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 hover:bg-[#1a1a1a] rounded-lg transition-colors text-[#888]"
+          >
+            {sidebarOpen ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeft className="w-5 h-5" />}
+          </button>
+          
           <div className="flex items-center gap-2">
-            <button 
-              onClick={() => {
-                const url = `${window.location.origin}/chat/${chatId}`;
-                navigator.clipboard.writeText(url);
-                toast.success('Chat link copied to clipboard!');
-              }}
-              className="p-2.5 text-[#666] hover:text-white hover:bg-[#1a1a1a] rounded-xl transition-colors"
-              title="Copy chat link"
-            >
-              <Share className="w-5 h-5" />
-            </button>
+            <Search className="w-5 h-5 text-[#e11d48]" />
+            <span className="font-semibold text-white">Research Agent</span>
           </div>
+          
+          <button
+            onClick={handleShare}
+            className="px-3 py-1.5 text-sm text-[#888] hover:text-white hover:bg-[#1a1a1a] rounded-lg transition-colors"
+          >
+            Share
+          </button>
         </header>
 
         {/* Messages */}
@@ -213,39 +203,35 @@ export default function ChatInterface({ chatId, initialMessages }: ChatInterface
           ref={messagesContainerRef}
           className="flex-1 overflow-y-auto"
         >
-          <div className="max-w-[800px] mx-auto px-6 py-10">
-            {messages.length === 0 && !streamingContent && (
+          {messages.length === 0 && !streamingContent ? (
+            <div className="h-full flex items-center justify-center p-8">
               <motion.div 
-                className="text-center py-24"
+                className="text-center max-w-md"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#252525] border border-[#2a2a2a] flex items-center justify-center mx-auto mb-8 shadow-2xl">
-                  <Sparkles className="w-12 h-12 text-[#e11d48]" />
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#252525] border border-[#2a2a2a] flex items-center justify-center mx-auto mb-8">
+                  <Search className="w-10 h-10 text-[#e11d48]" />
                 </div>
-                <h2 className="text-3xl font-bold text-white mb-4">
-                  What would you like to explore?
-                </h2>
-                <p className="text-[#666] text-lg max-w-md mx-auto mb-10">
-                  I'll search the web, analyze multiple sources, and provide you with a comprehensive answer.
+                <h2 className="text-2xl font-bold text-white mb-3">Start a conversation</h2>
+                <p className="text-[#666] mb-8">
+                  Ask anything and I'll search the web for accurate, up-to-date answers.
                 </p>
-                
-                {/* Quick action buttons */}
                 <div className="flex flex-wrap justify-center gap-3">
                   {['Explain quantum computing', 'Latest AI news', 'Best coding practices'].map((prompt, i) => (
                     <button
                       key={i}
                       onClick={() => handleSubmitWithQuery(prompt)}
-                      className="px-5 py-3 text-[15px] bg-[#1a1a1a] hover:bg-[#222] border border-[#2a2a2a] text-[#888] hover:text-white rounded-xl transition-all"
+                      className="px-4 py-2.5 text-sm text-[#888] bg-[#141414] hover:bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl transition-colors"
                     >
                       {prompt}
                     </button>
                   ))}
                 </div>
               </motion.div>
-            )}
-
-            <div className="space-y-10">
+            </div>
+          ) : (
+            <div className="max-w-4xl mx-auto px-6 py-8">
               <AnimatePresence mode="popLayout">
                 {messages.map((message) => (
                   <MessageBubble key={message.id} message={message} chatId={chatId} />
@@ -268,66 +254,73 @@ export default function ChatInterface({ chatId, initialMessages }: ChatInterface
               {isLoading && !streamingContent && (
                 <ThinkingIndicator text={thinkingText} />
               )}
-            </div>
 
-            <div ref={messagesEndRef} className="h-4" />
-          </div>
+              <div ref={messagesEndRef} className="h-8" />
+            </div>
+          )}
 
           {/* Scroll to bottom */}
           <AnimatePresence>
             {showScrollButton && (
               <motion.button
-                initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.8, y: 10 }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
                 onClick={() => scrollToBottom()}
-                className="fixed bottom-36 left-1/2 -translate-x-1/2 p-3.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full shadow-xl hover:bg-[#222] transition-colors z-10"
+                className="fixed bottom-32 left-1/2 -translate-x-1/2 p-3 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full shadow-lg hover:bg-[#252525] transition-colors"
               >
-                <ArrowDown className="w-5 h-5 text-[#888]" />
+                <ArrowDown className="w-4 h-4 text-white" />
               </motion.button>
             )}
           </AnimatePresence>
         </div>
 
-        {/* Input Area */}
-        <div className="flex-shrink-0 border-t border-[#1f1f1f] bg-[#0a0a0a]">
-          <div className="max-w-[800px] mx-auto p-6">
+        {/* Input */}
+        <div className="border-t border-[#1f1f1f] bg-[#0a0a0a] p-4">
+          <div className="max-w-4xl mx-auto">
             <form onSubmit={handleSubmit}>
-              <div className="relative bg-[#141414] border border-[#2a2a2a] rounded-2xl focus-within:border-[#e11d48]/50 transition-all">
+              <div className="relative bg-[#141414] border-2 border-[#2a2a2a] rounded-2xl focus-within:border-[#e11d48]/50 transition-colors">
                 <textarea
                   ref={inputRef}
                   value={input}
-                  onChange={handleInputChange}
+                  onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Reply...."
+                  placeholder="Ask me anything..."
                   disabled={isLoading}
                   rows={1}
-                  className="w-full px-5 py-5 pr-16 bg-transparent text-xl placeholder-[#555] focus:outline-none resize-none min-h-[60px] max-h-[200px] caret-[#e11d48]"
-                  style={{ color: 'white', fontSize: '20px' }}
+                  className="w-full px-5 py-4 bg-transparent text-white placeholder:text-[#555] focus:outline-none resize-none text-[16px] min-h-[56px] max-h-[200px]"
+                  style={{ color: 'white' }}
                 />
-                <div className="absolute right-3 bottom-3">
-                  {isLoading ? (
-                    <button
-                      type="button"
-                      onClick={handleStop}
-                      className="p-3 bg-red-500/20 hover:bg-red-500/30 text-red-500 rounded-xl transition-colors"
-                    >
-                      <StopCircle className="w-5 h-5" />
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      disabled={!input.trim()}
-                      className="p-3 bg-[#e11d48] hover:bg-[#be123c] disabled:bg-[#222] disabled:cursor-not-allowed text-white rounded-xl transition-all"
-                    >
-                      <Send className="w-5 h-5" />
-                    </button>
-                  )}
+                <div className="flex items-center justify-between px-4 py-3 border-t border-[#222]">
+                  <span className="text-[13px] text-[#444]">{input.length}/5000</span>
+                  <div className="flex items-center gap-2">
+                    <VoiceInput 
+                      onTranscript={(text) => setInput(prev => prev ? `${prev} ${text}` : text)}
+                      disabled={isLoading}
+                    />
+                    {isLoading ? (
+                      <button
+                        type="button"
+                        onClick={handleStop}
+                        className="p-2.5 bg-red-500/20 hover:bg-red-500/30 rounded-xl transition-colors"
+                      >
+                        <Square className="w-5 h-5 text-red-400" />
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        disabled={!input.trim()}
+                        className="p-2.5 bg-[#1a1a1a] hover:bg-[#252525] disabled:opacity-30 disabled:cursor-not-allowed rounded-xl transition-colors"
+                      >
+                        <ArrowUpRight className="w-5 h-5 text-white" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </form>
-            <p className="text-center text-[13px] text-[#555] mt-4">
-              AI can make mistakes. Always verify important information.
+            <p className="text-center text-[12px] text-[#444] mt-4">
+              AI powered Research agent · Can make mistakes
             </p>
           </div>
         </div>

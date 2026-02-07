@@ -15,6 +15,7 @@ import {
   Plus
 } from 'lucide-react';
 import { createChat, getChats, deleteChat, clearAllChats, Chat } from '@/lib/api';
+import VoiceInput from '@/components/VoiceInput';
 import { toast } from 'sonner';
 
 const suggestions = [
@@ -243,13 +244,19 @@ export default function HomePage() {
               />
               <div className="flex items-center justify-between px-6 py-4 border-t border-[#222]">
                 <span className="text-[14px] text-[#555]">{query.length}/5000</span>
-                <button
-                  type="submit"
-                  disabled={isCreating}
-                  className="p-3.5 bg-[#222] hover:bg-[#2a2a2a] rounded-xl transition-colors disabled:opacity-50"
-                >
-                  <ArrowUpRight className="w-5 h-5 text-white" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <VoiceInput 
+                    onTranscript={(text) => setQuery(prev => prev ? `${prev} ${text}` : text)}
+                    disabled={isCreating}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isCreating}
+                    className="p-3.5 bg-[#222] hover:bg-[#2a2a2a] rounded-xl transition-colors disabled:opacity-50"
+                  >
+                    <ArrowUpRight className="w-5 h-5 text-white" />
+                  </button>
+                </div>
               </div>
             </div>
           </form>
