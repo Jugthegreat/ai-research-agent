@@ -186,7 +186,7 @@ ai-research-agent/
 
 ## 🎥 Demo
 
-[Link to demo video]
+https://uillinoisedu-my.sharepoint.com/:v:/g/personal/ju12_illinois_edu/IQCm_4CNt-OHRoxJVqh25L0WAcq50JWn7RT4Mx5zjzxZVl4
 
 ## 🔗 Live Demo
 
